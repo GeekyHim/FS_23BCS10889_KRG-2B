@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prevent Default - Event Handling</title>
+</head>
+<body>
+    
+    <form id="myForm">
+        <input type="text" placeholder="Enter Name" id="name" />
+        <button type="submit">Submit</button>
+    </form>
+
+    <style>
+            
+    </style>
+    <script>
+        document.querySelector("#myForm").addEventListener("submit",(e)=>{
+        let name = document.querySelector("#name");
+        if(!name.value){
+            e.preventDefault()
+            alert("Enter Name!...")    
+        }
+        })
+    </script>
+</body>
+</html>
