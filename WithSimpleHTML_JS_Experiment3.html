@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Library Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input, button {
+      margin: 5px;
+      padding: 8px;
+    }
+    ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      margin: 8px 0;
+    }
+    .book-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .actions button {
+      margin-left: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Library Management</h2>
+
+  <!-- Add / Update Book Form -->
+  <form id="bookForm">
+    <input type="text" id="title" placeholder="Title" required>
+    <input type="text" id="author" placeholder="Author" required>
+    <button type="submit">Add Book</button>
+  </form>
+
+  <!-- Search Bar -->
+  <input type="text" id="search" placeholder="Search by title..." />
+
+  <!-- Book List -->
+  <ul id="bookList"></ul>
+
+  <script>
+    let books = [
+      { id: 1, title: "The Hobbit", author: "J.R.R. Tolkien" },
+      { id: 2, title: "1984", author: "George Orwell" }
+    ];
+
+    let editingBookId = null;
+
+    const bookForm = document.getElementById('bookForm');
+    const titleInput = document.getElementById('title');
+    const authorInput = document.getElementById('author');
+    const searchInput = document.getElementById('search');
+    const bookList = document.getElementById('bookList');
+
+    // Render books
+    function renderBooks() {
+      const searchTerm = searchInput.value.toLowerCase();
+      bookList.innerHTML = '';
+
+      books
+        .filter(book => book.title.toLowerCase().includes(searchTerm))
+        .forEach(book => {
+          const li = document.createElement('li');
+          li.className = 'book-item';
+          li.innerHTML = `
+            <span><strong>${book.title}</strong> by ${book.author}</span>
+            <span class="actions">
+              <button onclick="editBook(${book.id})">Edit</button>
+              <button onclick="deleteBook(${book.id})">Delete</button>
+            </span>
+          `;
+          bookList.appendChild(li);
+        });
+    }
+
+    // Handle form submit
+    bookForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const title = titleInput.value.trim();
+      const author = authorInput.value.trim();
+
+      if (!title || !author) return;
+
+      if (editingBookId) {
+        // Update
+        books = books.map(book =>
+          book.id === editingBookId ? { id: book.id, title, author } : book
+        );
+        editingBookId = null;
+        bookForm.querySelector('button').textContent = 'Add Book';
+      } else {
+        // Add
+        const newBook = { id: Date.now(), title, author };
+        books.push(newBook);
+      }
+
+      titleInput.value = '';
+      authorInput.value = '';
+      renderBooks();
+    });
+
+    // Edit book
+    function editBook(id) {
+      const book = books.find(b => b.id === id);
+      if (book) {
+        titleInput.value = book.title;
+        authorInput.value = book.author;
+        editingBookId = id;
+        bookForm.querySelector('button').textContent = 'Update Book';
+      }
+    }
+
+    // Delete book
+    function deleteBook(id) {
+      books = books.filter(book => book.id !== id);
+      renderBooks();
+    }
+
+    // Search
+    searchInput.addEventListener('input', renderBooks);
+
+    // Initial render
+    renderBooks();
+  </script>
+</body>
+</html>
